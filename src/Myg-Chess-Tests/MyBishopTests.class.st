@@ -16,7 +16,7 @@ MyBishopTests >> testMoves [
 
 	| bishop squares board |
 	board := MyChessBoard empty.
-	board at: 'e4' put: (bishop := MyBishop white).
+	board at: 'e4' put: (bishop := MyBishop white). 
 
 	squares := bishop targetSquares.
 	self
