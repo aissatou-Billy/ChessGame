@@ -18,11 +18,37 @@ MyPawn >> id2 [
 ]
 
 { #category : 'testing' }
+MyPawn >> isEmptySquare: aSquare [
+    ^ aSquare notNil and: [ aSquare hasPiece not ]
+]
+
+{ #category : 'testing' }
 MyPawn >> isTheFirstMove [
 
 ^self isWhite 
        ifTrue: [ self square file = $2 ]
        ifFalse: [ self square file = $7 ]
+]
+
+{ #category : 'as yet unclassified' }
+MyPawn >> moveToOneSquare [
+
+    ^ self isWhite
+        ifTrue: [ self square up ]
+        ifFalse: [ self square down ]
+]
+
+{ #category : 'as yet unclassified' }
+MyPawn >> moveToTwoSquare [
+
+    | firstSquare |
+
+    firstSquare := self moveToOneSquare .
+    firstSquare ifNil: [ ^ nil ].
+
+    ^ self isWhite
+        ifTrue: [ firstSquare up ]
+        ifFalse: [ firstSquare down ]
 ]
 
 { #category : 'rendering' }
@@ -34,22 +60,19 @@ MyPawn >> renderPieceOn: aSquare [
 { #category : 'rendering' }
 MyPawn >> targetSquaresLegal: aBoolean [
 
-    | firstSquare secondSquare |
+   | firstSquare secondSquare |
 
-    firstSquare := self isWhite
-        ifTrue: [ self square up ]
-        ifFalse: [ self square down ].
+    firstSquare := self moveToOneSquare .
 
-    firstSquare ifNil: [ ^ #() ].
-    firstSquare hasPiece ifTrue: [ ^ #() ].
+    (self isEmptySquare: firstSquare)
+        ifFalse: [ ^ #() ].
 
-    self isTheFirstMove ifFalse: [ ^ { firstSquare } ].
+    self isTheFirstMove
+        ifFalse: [ ^ { firstSquare } ].
 
-    secondSquare := self isWhite
-        ifTrue: [ firstSquare up ]
-        ifFalse: [ firstSquare down ].
+    secondSquare := self moveToTwoSquare .
 
-    (secondSquare notNil and: [ secondSquare hasPiece not ])
+    (self isEmptySquare: secondSquare)
         ifTrue: [ ^ { firstSquare. secondSquare } ].
 
     ^ { firstSquare }
