@@ -55,6 +55,42 @@ MyPawnTest >> testBlackPawnsMoveTwoCase [
 ]
 
 { #category : 'tests' }
+MyPawnTest >> testCantMoveIfTheresAnOpponentForward [
+
+| p1 p2 squares board |
+	board := MyChessBoard empty.
+	board at: 'e3' put: (p1:= MyPawn white ).
+	board at: 'e4' put: (p2:= MyPawn black ) .
+
+	squares := p1 targetSquares.
+	self deny: (squares includes: (board at: 'e4')).
+]
+
+{ #category : 'tests' }
+MyPawnTest >> testPawnCanCaptureLeft [
+
+| pawn  pOpponant squares board |
+	board := MyChessBoard empty.
+	board at: 'e3' put: (pawn:= MyPawn white ).
+	board at: 'f4' put: (pOpponant := MyPawn black). 
+	
+
+	squares := pawn targetSquares.
+	self assert: (squares includes: (board at: 'f4')).
+]
+
+{ #category : 'tests' }
+MyPawnTest >> testPawnCanMoveDiagonally [
+
+| pawn squares board |
+	board := MyChessBoard empty.
+	board at: 'e4' put: (pawn:= MyPawn white ).
+
+	squares := pawn targetSquares.
+	self deny: (squares includes: (board at: 'd5'))
+]
+
+{ #category : 'tests' }
 MyPawnTest >> testWhitePawnsMoveTwoCases [
 
 | pawn squares board |
