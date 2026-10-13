@@ -8,21 +8,12 @@ Class {
 { #category : 'as yet unclassified' }
 MyPawn >> captureOpponent [
 
-       | res var |
-
-    res := self isWhite
-        ifTrue: [ self square up left ]
-        ifFalse: [ self square down left ].
-
-    var := self isWhite
-        ifTrue: [ self square up right ]
-        ifFalse: [ self square down right ].
-
-    ^ { res. var } select: [ :square |
-        square notNil
-            and: [ square hasPiece
-                and: [ square contents color ~= self color ] ]
-    ]
+       ^ { self moveLeft. self moveRight }
+        select: [ :square |
+            square notNil
+                and: [ square hasPiece
+                    and: [ square contents color ~= self color ] ]
+        ]
 ]
 
 { #category : 'accessing' }
@@ -48,6 +39,22 @@ MyPawn >> isTheFirstMove [
 ^self isWhite 
        ifTrue: [ self square file = $2 ]
        ifFalse: [ self square file = $7 ]
+]
+
+{ #category : 'api - configuration' }
+MyPawn >> moveLeft [
+
+^ self isWhite
+        ifTrue: [ self square up left ]
+        ifFalse: [ self square down left ]
+]
+
+{ #category : 'api - configuration' }
+MyPawn >> moveRight [ 
+
+^ self isWhite
+        ifTrue: [ self square up right]
+        ifFalse: [ self square down right ]
 ]
 
 { #category : 'as yet unclassified' }
@@ -83,14 +90,13 @@ MyPawn >> targetSquaresLegal: aBoolean [
    | firstSquare secondSquare captureSquares |
 
     firstSquare := self moveToOneSquare.
-
-    (self isEmptySquare: firstSquare)
-        ifFalse: [ ^ self captureOpponent ].
-
     captureSquares := self captureOpponent.
 
+    (self isEmptySquare: firstSquare)
+        ifFalse: [ ^ captureSquares ].
+
     self isTheFirstMove
-        ifFalse: [ ^ ({ firstSquare } , captureSquares) ].
+        ifFalse: [ ^ { firstSquare } , captureSquares ].
 
     secondSquare := self moveToTwoSquare.
 
