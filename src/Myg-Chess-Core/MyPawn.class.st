@@ -5,6 +5,26 @@ Class {
 	#package : 'Myg-Chess-Core'
 }
 
+{ #category : 'as yet unclassified' }
+MyPawn >> captureOpponent [
+
+       | res var |
+
+    res := self isWhite
+        ifTrue: [ self square up left ]
+        ifFalse: [ self square down left ].
+
+    var := self isWhite
+        ifTrue: [ self square up right ]
+        ifFalse: [ self square down right ].
+
+    ^ { res. var } select: [ :square |
+        square notNil
+            and: [ square hasPiece
+                and: [ square contents color ~= self color ] ]
+    ]
+]
+
 { #category : 'accessing' }
 MyPawn >> id [
 
@@ -60,20 +80,24 @@ MyPawn >> renderPieceOn: aSquare [
 { #category : 'rendering' }
 MyPawn >> targetSquaresLegal: aBoolean [
 
-   | firstSquare secondSquare |
+   | firstSquare secondSquare captureSquares |
 
-    firstSquare := self moveToOneSquare .
+    firstSquare := self moveToOneSquare.
 
     (self isEmptySquare: firstSquare)
-        ifFalse: [ ^ #() ].
+        ifFalse: [ ^ self captureOpponent ].
+
+    captureSquares := self captureOpponent.
 
     self isTheFirstMove
-        ifFalse: [ ^ { firstSquare } ].
+        ifFalse: [ ^ ({ firstSquare } , captureSquares) ].
 
-    secondSquare := self moveToTwoSquare .
+    secondSquare := self moveToTwoSquare.
 
     (self isEmptySquare: secondSquare)
-        ifTrue: [ ^ { firstSquare. secondSquare } ].
+        ifTrue: [
+            ^ { firstSquare. secondSquare } , captureSquares
+        ].
 
-    ^ { firstSquare }
+    ^ { firstSquare } , captureSquares
 ]
